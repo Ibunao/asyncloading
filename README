@@ -9,3 +9,8 @@
 解决:为加载慢的对象添加tag，输出时进行tag判断
 判断输出时并非恒等，第一个item传进去的imageview设置的tag，当他加载时间较长，往下滑到第八个了，这时候
 第八个item的imageview对象将会把第一个item的imageview设置的额tag进行覆盖，所以第一个就出不来了
+在ImageLoader1中并没有使用tag标记，是因为用的是AsyncTask异步加载，它不会造成并发现行是有序进行的
+
+2016.7.16
+添加了ImageLoader3
+实现了内存缓存，磁盘缓存，图片压缩，滚动不加载，静止后加载，线程池的应用
