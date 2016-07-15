@@ -44,7 +44,8 @@ public class MainActivity extends Activity {
 			// TODO 自动生成的方法存根
 			super.onPostExecute(result);
 //			NewsAdapter adapter=new NewsAdapter(MainActivity.this,result);
-			NewsAdapter2 adapter=new NewsAdapter2(MainActivity.this, result, listView);
+//			NewsAdapter2 adapter=new NewsAdapter2(MainActivity.this, result, listView);
+			NewsAdapter3 adapter=new NewsAdapter3(MainActivity.this, result, listView);
 			listView.setAdapter(adapter);
 		}
 		

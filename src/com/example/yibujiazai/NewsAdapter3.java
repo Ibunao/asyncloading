@@ -2,6 +2,8 @@ package com.example.yibujiazai;
 
 import java.util.List;
 
+import com.example.yibujiazai.util.ImageLoader3;
+
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,17 +15,19 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 //实现滚动时监听，在滚动时不加载UI,在适配器中实现监听接口需要实现AbsListView.OnScrollListener接口
-public class NewsAdapter2 extends BaseAdapter implements  AbsListView.OnScrollListener{
+public class NewsAdapter3 extends BaseAdapter implements  AbsListView.OnScrollListener{
 	private List<NewBean> mListBean;
 	private LayoutInflater inflater;
-	private ImageLoader2 mImageLoader2;
 	public static String[] URLS;
 	private int mStart,mEnd;
 	private boolean first;
-	public NewsAdapter2(Context context,List<NewBean> listBean,ListView listView) {
+	private ImageLoader3 imageLoader;
+	private boolean mIsListViewIdle=true;
+    private static final int TAG_KEY_URI = R.id.imageview;
+    
+	public NewsAdapter3(Context context,List<NewBean> listBean,ListView listView) {
 		mListBean=listBean;
 		inflater=LayoutInflater.from(context);
-		mImageLoader2=new ImageLoader2(listView);
 		//记得初始化数组    不然程序崩溃
 		URLS=new String[listBean.size()];
 		for (int i = 0; i <listBean.size(); i++) {
@@ -32,6 +36,7 @@ public class NewsAdapter2 extends BaseAdapter implements  AbsListView.OnScrollLi
 		//不要忘记了注册事件
 		listView.setOnScrollListener(this);
 		first=true;
+		imageLoader = new ImageLoader3(context,listView);
 	}
 	@Override
 	public int getCount() {
@@ -65,12 +70,12 @@ public class NewsAdapter2 extends BaseAdapter implements  AbsListView.OnScrollLi
 		}else{
 			viewHolder=(ViewHolder) convertView.getTag();
 		}
-		Log.i("position", position+"");
-		viewHolder.ivIcon.setImageResource(R.drawable.ic_launcher);
-		String url=mListBean.get(position).newsIcon;
-		viewHolder.ivIcon.setTag(url);
+//		Log.i("position", position+"");
 		
-		mImageLoader2.showImageByAsyncTask(viewHolder.ivIcon, url);
+			viewHolder.ivIcon.setImageResource(R.drawable.ic_launcher);
+			String url=mListBean.get(position).newsIcon;
+			viewHolder.ivIcon.setTag(url);
+			imageLoader.showImages(viewHolder.ivIcon, url,position);
 		
 		viewHolder.tvContent.setText(mListBean.get(position).newsContent);
 		viewHolder.tvTitle.setText(mListBean.get(position).newsTitle);
@@ -87,10 +92,13 @@ public class NewsAdapter2 extends BaseAdapter implements  AbsListView.OnScrollLi
 		// TODO 自动生成的方法存根
 		if (scrollState==SCROLL_STATE_IDLE) {
 			//停止状态进行加载
-			mImageLoader2.loadImages(mStart,mEnd);
+//			mIsListViewIdle=true;
+//			//刷新数据实现加载,不行，改全部重新加载了
+//			this.notifyDataSetChanged();
+			imageLoader.bindBitmap(mStart,mEnd,100,100);
 		} else {
 			//禁止加载
-//			mImageLoader2.cancelAllTasks();
+//			mIsListViewIdle=false;
 		}
 		
 	}
@@ -103,7 +111,7 @@ public class NewsAdapter2 extends BaseAdapter implements  AbsListView.OnScrollLi
 		mStart=firstVisibleItem;
 		mEnd=firstVisibleItem+visibleItemCount;
 		if (first==true && visibleItemCount>0) {
-			mImageLoader2.loadImages(mStart, mEnd);
+			imageLoader.bindBitmap(mStart,mEnd,100,100);
 			first=false;
 		}
 	}
